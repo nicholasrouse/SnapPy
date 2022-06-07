@@ -11,8 +11,7 @@ Things to consider:
 
 from collections import namedtuple
 
-from ..SnapPy import Manifold
-from ..SnapPy.snap import find_field
+from ...snap import find_field
 from sage.all import floor, log
 
 from . import (
@@ -43,6 +42,7 @@ class ManifoldNT:
     def __init__(
         self,
         spec=None,
+        snappy_mfld=None,
     ):
         """
         It's worth noting that we store a lot of attributes here. The reason is that a
@@ -58,7 +58,7 @@ class ManifoldNT:
         and the computations will actually meaningfully slow down whatever is being
         done, one may pass in delay_computations=True.
         """
-        self._snappy_mfld = Manifold(spec)
+        self._snappy_mfld = snappy_mfld
         # The fields are sage NumberField objects with a *monic* generating polynomial.
         # Perhaps subclass Sage's NumberField to store all this info?
         self._trace_field = None
@@ -117,11 +117,13 @@ class ManifoldNT:
         self.__dict__.update(state)
         # We reconstruct the wrapped snappy manifold each time since it's cheap and has
         # some issues being pickled.
+        """
         self._snappy_mfld = Manifold(state["snappy_mfld_name"])
         self._approx_trace_field_gens = self._snappy_mfld.trace_field_gens()
         self._approx_invariant_trace_field_gens = (
             self._snappy_mfld.invariant_trace_field_gens()
         )
+        """
 
     def _arithmetic_invariants_known(self):
         basic_invariants_known = all(
