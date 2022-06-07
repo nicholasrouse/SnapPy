@@ -2,7 +2,7 @@
 Module for odds and ends functions that thematically didn't fit into another module.
 """
 from sage.all import CC, ZZ, ComplexField, NumberField, PolynomialRing, factor
-from ...snap.find_field import (
+from . find_field import (
     ApproximateAlgebraicNumber,
     ExactAlgebraicNumber,
     ListOfApproximateAlgebraicNumbers,

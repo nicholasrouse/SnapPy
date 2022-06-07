@@ -11,7 +11,7 @@ Things to consider:
 
 from collections import namedtuple
 
-from ...snap import find_field
+from . import find_field, polished_reps
 from sage.all import floor, log
 
 from . import (
@@ -140,7 +140,7 @@ class ManifoldNT:
         return basic_invariants_known and denominators_known
 
     def defining_function(self, prec):
-        return polished_holonomy(self, bits_prec=prec)
+        return polished_reps.polished_holonomy(self, bits_prec=prec)
 
     def next_prec_and_degree(
         self,

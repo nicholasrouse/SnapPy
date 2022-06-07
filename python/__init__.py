@@ -126,7 +126,30 @@ snap.add_methods(Manifold)
 snap.add_methods(ManifoldHP)
 snap.add_methods(Triangulation, hyperbolic=False)
 
-from . import arithmetic
+def _trace_field(manifold, prec=None, degree=None):
+    return snap.ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold).trace_field(prec, degree)
+
+Manifold.trace_field = _trace_field
+
+def _invariant_trace_field(manifold, prec=None, degree=None):
+    return snap.ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold).invariant_trace_field(prec, degree)
+
+Manifold.invariant_trace_field = _invariant_trace_field
+
+def _quaternion_algebra(manifold, prec=None):
+    return snap.ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold).quaternion_algebra(prec)
+
+Manifold.quaternion_algebra = _quaternion_algebra
+
+def _invariant_quaternion_algebra(manifold, prec=None):
+    return snap.ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold).invariant_quaternion_algebra(prec)
+
+Manifold.invariant_quaternion_algebra = _invariant_quaternion_algebra
+
+def _denominators(manifold):
+    return snap.ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold).denominators()
+
+Manifold.denominators = _denominators
 
 from . import verify
 Manifold.verify_hyperbolicity = verify.verify_hyperbolicity
