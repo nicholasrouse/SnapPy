@@ -126,6 +126,54 @@ snap.add_methods(Manifold)
 snap.add_methods(ManifoldHP)
 snap.add_methods(Triangulation, hyperbolic=False)
 
+from . import arithmetic
+
+def _trace_field(
+        manifold,
+        prec=None,
+        degree=None,
+    ):
+    if not hasattr(manifold, "_wrappedManifoldNT"):
+        manifold._wrappedManifoldNT = arithmetic.ManifoldNT(str(manifold))
+    return manifold._wrappedManifoldNT.trace_field(prec, degree)
+
+def _invariant_trace_field(
+        manifold,
+        prec=None,
+        degree=None,
+    ):
+    if not hasattr(manifold, "_wrappedManifoldNT"):
+        manifold._wrappedManifoldNT = arithmetic.ManifoldNT(str(manifold))
+    return manifold._wrappedManifoldNT.invariant_trace_field(prec, degree)
+
+def _quaternion_algebra(
+        manifold,
+        prec=None,
+    ):
+    if not hasattr(manifold, "_wrappedManifoldNT"):
+        manifold._wrappedManifoldNT = arithmetic.ManifoldNT(str(manifold))
+    return manifold._wrappedManifoldNT.quaternion_algebra(prec)
+
+def _invariant_quaternion_algebra(
+        manifold,
+        prec=None,
+    ):
+    if not hasattr(manifold, "_wrappedManifoldNT"):
+        manifold._wrappedManifoldNT = arithmetic.ManifoldNT(str(manifold))
+    return manifold._wrappedManifoldNT.invariant_quaternion_algebra(prec)
+
+def _denominators(manifold):
+    if not hasattr(manifold, "_wrappedManifoldNT"):
+        manifold._wrappedManifoldNT = arithmetic.ManifoldNT(str(manifold))
+    return manifold._wrappedManifoldNT.denominators()
+
+Manifold.trace_field = _trace_field
+ManifoldHP.trace_field = arithmetic.ManifoldNT.trace_field
+Manifold.invariant_trace_field = _invariant_trace_field
+Manifold.quaternion_algebra = _quaterion_algebra
+Manifold.invariant_quaternion_algebra = _invariant_quaternion_algebra
+Manifold.denominators = _denominators
+
 from . import verify
 Manifold.verify_hyperbolicity = verify.verify_hyperbolicity
 ManifoldHP.verify_hyperbolicity = verify.verify_hyperbolicity
