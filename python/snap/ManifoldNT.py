@@ -486,9 +486,21 @@ class ManifoldNT:
 
         For example:
 
+            sage: M = Manifold('m003')
+            sage: M.dehn_fill([-3, 1])
+            sage: M.denominators()
+            set()
+
+            sage: M = Manifold('m137')
+            sage: M.denominators()
+            {Fractional ideal (z + 1)}
+
             sage: M = Manifold('m015')
             sage: M.dehn_fill([8, 1])
-            sage: M.denominators()
+            sage: I = M.denominators().pop()
+            sage: I.norm()
+            2
+
         """
         if self._denominators or self._denominators == set():
             return self._denominators
