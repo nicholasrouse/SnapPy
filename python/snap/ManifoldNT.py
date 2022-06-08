@@ -525,11 +525,8 @@ class ManifoldNT:
         """
         This tries to compute the four basic arithmetic invariants: the two trace
         fields and the two quaternion algebras.
-
         It will also try to compute the other invariants to fill out all the attributes
-        of the instance. Right now it's called upon creation of a ManifoldNT instance,
-        but this can be disabled with a keyword argument when a ManifoldNT object is
-        initialized.
+        of the instance.
         """
         tf_prec = self.next_prec_and_degree("tf").prec if prec is None else prec
         tf_degree = self.next_prec_and_degree("tf").degree if degree is None else degree
