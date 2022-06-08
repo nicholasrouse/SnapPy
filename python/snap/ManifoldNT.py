@@ -84,7 +84,7 @@ class ManifoldNT:
         self._denominator_residue_characteristics = None
         # This sometimes raises exceptions, but it happens in SnapPy itself.
         self._approx_trace_field_gens = self._snappy_mfld.trace_field_gens()
-        if not self._has_two_torsion_in_homology():
+        if self.is_modtwo_homology_sphere():
             self._approx_invariant_trace_field_gens = self._approx_trace_field_gens
         else:
             self._approx_invariant_trace_field_gens = (
@@ -203,7 +203,7 @@ class ManifoldNT:
                     and self._invariant_trace_field is not None
                 ):
                     itf_deg = self._invariant_trace_field.degree()
-                    if not self._has_two_torsion_in_homology():
+                    if self.is_modtwo_homology_sphere():
                         newpair = PrecDegreeTuple(newpair.prec, itf_deg)
                     else:
                         implied_deg = newpair.prec * asymptotic_ratio
@@ -236,47 +236,19 @@ class ManifoldNT:
                     )
                     return max(largest_failed_prec + prec_increment, field_prec)
 
-    def _has_two_torsion_in_homology(self):
+    def is_modtwo_homology_sphere(self):
         factors = [
             divisor
-            for divisor in self.homology().coefficients
-            if divisor != 0 and divisor % 2 == 0
+            for divisor in self.homology().elementary_divisors()
+            if divisor == 0 or divisor % 2 == 0
         ]
-        return len(factors) >= 1
+        return len(factors) == 0
 
     def trace_field(
         self,
         prec=None,
         degree=None,
     ):
-        """
-        If be_smart is False, the function just tries to compute the trace field using
-        whatever precision and degree is passed in. In particular when be_smart=False,
-        the _force_compute parameter is superfluous.
-
-        When be_smart is True, we use our records for the trace field to pick a degree
-        and precision to try. I.e. whatever prec and degrees might have been passed in
-        are ignored. The degree might change based on the next paragraph though.
-
-        When be_smart is True and the invariant trace field is known and the orbifold
-        has no 2-torsion in homology, then the trace field is equal to the invariant
-        trace field. However, in this case, exact generators for the trace field will
-        not be computed, and these generators are necessary (as far as I know) to
-        compute the primes at which the Kleinian group has nonintegral trace. When
-        _force_compute=True, these generators will be found assuming the method
-        succeeds in finding the trace field at all. If there is 2-torsion in homology,
-        it's possible that trace field is a proper extension of degree of the
-        invariant trace field. In this case, we do still get some knowledge about the
-        degree, namely that it's at least as large as that of the invariant trace field.
-
-        The verbosity argument prints some information as the method proceeds. This
-        can be useful for large calculations.
-
-        If _force_compute is True, then the method won't stop when it finds the trace
-        field; it will be sure to find the generators as well.
-
-        Last updated: Sept-24 2020
-        """
         if self._trace_field and prec is None and degree is None:
             return self._trace_field
         if prec is None:
@@ -297,7 +269,7 @@ class ManifoldNT:
             self._trace_field_generators = exact_field_data[2]
             if (
                 self._invariant_trace_field is None
-                and not self._has_two_torsion_in_homology()
+                and not self.is_modtwo_homology_sphere()
             ):
                 self._invariant_trace_field_prec_record[
                     PrecDegreeTuple(prec, degree)
