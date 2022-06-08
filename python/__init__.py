@@ -136,18 +136,24 @@ def _invariant_trace_field(manifold, prec=None, degree=None):
 
 Manifold.invariant_trace_field = _invariant_trace_field
 
-def _quaternion_algebra(manifold, prec=None):
-    return snap.ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold).quaternion_algebra(prec)
+def _quaternion_algebra(manifold, prec=None, degree=None):
+    mfld_nt = snap.ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold)
+    mfld_nt.trace_field(prec, degree)
+    return mfld_nt.quaternion_algebra(spec=None, snappy_mfld=manifold).quaternion_algebra(prec)
 
 Manifold.quaternion_algebra = _quaternion_algebra
 
-def _invariant_quaternion_algebra(manifold, prec=None):
-    return snap.ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold).invariant_quaternion_algebra(prec)
+def _invariant_quaternion_algebra(manifold, prec=None, degree=None):
+    mfld_nt = snap.ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold)
+    mfld_nt.invariant_trace_field(prec, degree)
+    return mfld_nt.invariant_quaternion_algebra(prec)
 
 Manifold.invariant_quaternion_algebra = _invariant_quaternion_algebra
 
-def _denominators(manifold):
-    return snap.ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold).denominators()
+def _denominators(manifold, prec=None, degree=None):
+    mfld_nt = snap.ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold)
+    mfld_nt.trace_field(prec, degree)
+    return mfld_nt.denominators()
 
 Manifold.denominators = _denominators
 
