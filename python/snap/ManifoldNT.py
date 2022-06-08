@@ -511,6 +511,12 @@ class ManifoldNT:
 
         Recall the convention that self._denominators is None if they haven't been
         computed but set() if they have been to computed to be the empty set.
+
+        For example:
+
+            sage: M = Manifold('m015')
+            sage: M.dehn_fill([8, 1])
+            sage: M.denominators()
         """
         if self._denominators or self._denominators == set():
             return self._denominators
