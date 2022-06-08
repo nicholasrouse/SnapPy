@@ -84,7 +84,7 @@ class ManifoldNT:
         self._denominator_residue_characteristics = None
         # This sometimes raises exceptions, but it happens in SnapPy itself.
         self._approx_trace_field_gens = self._snappy_mfld.trace_field_gens()
-        if not self._has_two_torsion_in_homology():
+        if self.is_modtwo_homology_sphere():
             self._approx_invariant_trace_field_gens = self._approx_trace_field_gens
         else:
             self._approx_invariant_trace_field_gens = (
@@ -203,7 +203,7 @@ class ManifoldNT:
                     and self._invariant_trace_field is not None
                 ):
                     itf_deg = self._invariant_trace_field.degree()
-                    if not self._has_two_torsion_in_homology():
+                    if self.is_modtwo_homology_sphere():
                         newpair = PrecDegreeTuple(newpair.prec, itf_deg)
                     else:
                         implied_deg = newpair.prec * asymptotic_ratio
@@ -236,19 +236,20 @@ class ManifoldNT:
                     )
                     return max(largest_failed_prec + prec_increment, field_prec)
 
-    def _has_two_torsion_in_homology(self):
+    def is_modtwo_homology_sphere(self):
         factors = [
             divisor
-            for divisor in self.homology().coefficients
-            if divisor != 0 and divisor % 2 == 0
+            for divisor in self.homology().elementary_divisors()
+            if divisor == 0 or divisor % 2 == 0
         ]
-        return len(factors) >= 1
+        return len(factors) == 0
 
     def trace_field(
         self,
         prec=None,
         degree=None,
     ):
+<<<<<<< HEAD
         """
         The verbosity argument prints some information as the method proceeds. This
         can be useful for large calculations.
@@ -258,6 +259,8 @@ class ManifoldNT:
 
         Last updated: Sept-24 2020
         """
+=======
+>>>>>>> 54da3e3f4014832227ab122f0e080b28796ad414
         if self._trace_field and prec is None and degree is None:
             return self._trace_field
         if prec is None:
@@ -278,7 +281,7 @@ class ManifoldNT:
             self._trace_field_generators = exact_field_data[2]
             if (
                 self._invariant_trace_field is None
-                and not self._has_two_torsion_in_homology()
+                and not self.is_modtwo_homology_sphere()
             ):
                 self._invariant_trace_field_prec_record[
                     PrecDegreeTuple(prec, degree)
