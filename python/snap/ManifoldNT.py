@@ -293,11 +293,13 @@ class ManifoldNT:
         576
 
         Here is an example of two knots with isomorphic trace fields
-        sage: M = Manifold('7_4')
+        sage: M = Manifold('6_1')
         sage: K = M.trace_field()
-        sage: N = Manifold('9_14')
+        sage: N = Manifold('7_7')
         sage: L = N.trace_field()
-
+        sage: snapp.snap.field_isomorphisms.same_subfield_of_CC(L,K)
+        False
+        
         Last updated: Sept-24 2020
         """
         if self._trace_field and prec is None and degree is None:
