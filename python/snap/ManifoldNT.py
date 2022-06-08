@@ -156,7 +156,6 @@ class ManifoldNT:
         2020, it just takes the highest failed precision and degree pair and increases
         them by the default increment. It's returned as a named 2-tuple (prec, degree)
         for fields an integer (i.e. not a namedtuple) for the algebras.
-
         An assumption I'm going to make is that we want to try to compute the algebras
         with at least as much pecision as we needed for the fields. We have to return
         some degree, but it will get fixed to be that of the field in the algebra
@@ -274,6 +273,30 @@ class ManifoldNT:
 
         If _force_compute is True, then the method won't stop when it finds the trace
         field; it will be sure to find the generators as well.
+        
+        For example, we compute the discriminant and the degree of the trace field of the knot 8_17
+
+        sage: M = Manifold('8_17')
+        sage: K = M.trace_field()
+        sage: K.degree()
+        18
+        sage: K.discriminant()
+        -25277271113745568723
+
+        Here is an example of a closed 3-manifold
+
+        sage: M = Manifold('m010(-1,2)')
+        sage: K = M.trace_field()
+        sage: K.degree()
+        4
+        sage: K.discriminant()
+        576
+
+        Here is an example of two knots with isomorphic trace fields
+        sage: M = Manifold('7_4')
+        sage: K = M.trace_field()
+        sage: N = Manifold('9_14')
+        sage: L = N.trace_field()
 
         Last updated: Sept-24 2020
         """
@@ -317,6 +340,23 @@ class ManifoldNT:
         """
         This now should work similarly to compute_trace_field method. 
         Last updated: Jun-6 2022
+        
+        sage: M = Manifold('8_12')
+        sage: K = M.trace_field()
+        sage: K.degree()
+        14
+        sage: K.discriminant()
+        -15441795725579
+
+        Here is a closed example.
+
+        sage: M = Manifold('m010(-1,2)') 
+        sage: K = M.trace_field()
+        sage: K.degree()
+        2
+        sage: K.discriminant()
+        -3
+
         """
         if self._invariant_trace_field and prec is None and degree is None:
             return self._invariant_trace_field
