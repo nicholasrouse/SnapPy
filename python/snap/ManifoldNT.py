@@ -250,25 +250,6 @@ class ManifoldNT:
         degree=None,
     ):
         """
-        If be_smart is False, the function just tries to compute the trace field using
-        whatever precision and degree is passed in. In particular when be_smart=False,
-        the _force_compute parameter is superfluous.
-
-        When be_smart is True, we use our records for the trace field to pick a degree
-        and precision to try. I.e. whatever prec and degrees might have been passed in
-        are ignored. The degree might change based on the next paragraph though.
-
-        When be_smart is True and the invariant trace field is known and the orbifold
-        has no 2-torsion in homology, then the trace field is equal to the invariant
-        trace field. However, in this case, exact generators for the trace field will
-        not be computed, and these generators are necessary (as far as I know) to
-        compute the primes at which the Kleinian group has nonintegral trace. When
-        _force_compute=True, these generators will be found assuming the method
-        succeeds in finding the trace field at all. If there is 2-torsion in homology,
-        it's possible that trace field is a proper extension of degree of the
-        invariant trace field. In this case, we do still get some knowledge about the
-        degree, namely that it's at least as large as that of the invariant trace field.
-
         The verbosity argument prints some information as the method proceeds. This
         can be useful for large calculations.
 
@@ -395,11 +376,15 @@ class ManifoldNT:
         precision variable is used for expressing the Hilbert symbol entries in terms
         of the elements of the trace field.
 
-        The be_smart parameter is used to get a smarter precision based on previous
-        computations.
-
         There are no special kwargs; it just allows for passing in the same argument
         signature as the other invarinats (e.g. compute_trace_field).
+
+           sage: M = Manifold('m003(-3,1)')
+           sage: QA = M.quaternion_algebra()
+           sage: QA.ramified_nondyadic_residue_characteristics()
+           Counter({5: 1})
+           sage: QA.is_division_algebra()
+           True
 
         Possible refactor: Just have one method for computing quaternion algebras from
         ApproximateAlgebraicNumbers. In that case, probably easiest to make another
@@ -457,6 +442,25 @@ class ManifoldNT:
         """
         See docstring for compute_quaterion_algebra_fixed_prec. Should try to refactor this
         somehow since it's so similar to the one for the noninvariant quaternion algebra.
+
+           sage: M = Manifold('m003(-4,1)')
+           sage: IQA = M.invariant_quaternion_algebra()
+           sage: IQA.ramified_nondyadic_residue_characteristics()
+           Counter({13: 1})
+           sage: IQA.is_division_algebra()
+           True
+
+           sage: M = Manifold('m009(5,1)')
+           sage: QA = M.quaternion_algebra()
+           sage: IQA = M.invariant_quaternion_algebra()
+           sage: QA.ramified_nondyadic_residue_characteristics()
+           Counter()
+           sage: IQA.ramified_nondyadic_residue_characteristics()
+           Counter({5: 1})
+           sage: QA.ramified_dyadic_residue_characteristics()
+           Counter()
+           sage: IQA.ramified_dyadic_residue_characteristics()
+           Counter({2: 1})
 
         Last updated: Aug-29 2020
         """
