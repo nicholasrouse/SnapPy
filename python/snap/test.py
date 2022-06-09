@@ -106,6 +106,7 @@ def run_doctests(verbose=False, print_info=True):
     from snappy.snap import polished_reps
     from snappy.snap import interval_reps
     from snappy.snap import fundamental_polyhedron
+    from snappy.snap import ManifoldNT
     from snappy.snap.peripheral import dual_cellulation
     from snappy.snap.peripheral import link
     from snappy.snap.peripheral import peripheral
@@ -125,6 +126,7 @@ def run_doctests(verbose=False, print_info=True):
         dual_cellulation,
         link,
         peripheral,
+        ManifoldNT,
     ]
 
     globs = {'Manifold':snappy.Manifold,
