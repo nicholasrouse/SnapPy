@@ -66,6 +66,15 @@ class QuaternionAlgebraNF(_QA_ab):
         Returns True or False depending on whether the algebra is ramified at the place.
         The place parameter can be either a prime ideal of the base_ring, or a real
         place of the base ring as contained in the output of base_ring.real_places().
+		sage: k.<z>=NumberField(x^8 + 2*x^6 - x^5 + 2*x^4 - 5*x^3 + 3*x - 1)
+		sage: A=QuaternionAlgebraNF(k,z^2 + 2*z - 3, 2*z^7 + z^6 + 4*z^5 + 3*z^3 - 6*z^2 - 2*z + 2)
+		sage: A.is_ramified_at((41, z + 15))
+		True
+
+		sage: k.<z>=NumberField(x^5 - 3*x^3 - 2*x^2 + 2*x + 1)
+		sage: A=QuaternionAlgebraNF(k,2*z^4 - z^3 - 5*z^2 - z,-3*z^4 + 9*z^2 + 2*z - 1)
+		sage: A.is_ramified_at((-z^4 - 2*z^3 + 4*z^2 + 5*z - 2))
+		False
         """
         if self.base_ring().hilbert_symbol(*self.invariants(), place) == -1:
             try:
@@ -88,6 +97,13 @@ class QuaternionAlgebraNF(_QA_ab):
         places as maps. Obviously this could basically be a somewhat long one-liner, but
         I think it's a bit nicer this way. The output by the way is a set as the places
         are hashable in Sage.
+
+		sage: k.<z>=NumberField(x^2-x+1)
+		sage: A=QuaternionAlgebraNF(k,4*z-8,6*z)
+		sage: A.ramified_real_places()
+		set()
+
+		
         """
         if self._ramified_real_places_known:
             return self._ramified_real_places
@@ -105,6 +121,15 @@ class QuaternionAlgebraNF(_QA_ab):
         return self._ramified_real_places
 
     def ramified_nondyadic_places(self):
+	"""
+	This function will return the nondyadic places of the algebra in question
+		
+		sage: k.<z>=NumberField(x^6 - 2*x^4 - 3*x^3 + 3*x + 2)
+		sage: A=QuaternionAlgebraNF(k,3*z^5 - 2*z^4 - 6*z^3 - 5*z^2 + 6*z + 5, -6*z^5 + 2*z^4 + 12*z^3 + 16*z
+		....: ^2 - 12*z - 16)
+		sage: A.ramified_nondyadic_places()
+		set()
+	"""
         if self._ramified_nondyadic_places_known:
             return self._ramified_nondyadic_places
         a, b = self.invariants()
@@ -132,6 +157,16 @@ class QuaternionAlgebraNF(_QA_ab):
         return self._ramified_nondyadic_places
 
     def ramified_dyadic_places(self):
+	"""
+	this function will return the ramified finite places of the quaternion algebra lying
+	above the prime 2
+
+		sage: k.<z>=NumberField(x^10 - 2*x^8 - 2*x^7 + 2*x^6 + 3*x^5 - 3*x^3 - x^2 + 2*x + 1)
+		sage: A=QuaternionAlgebraNF(k,z^9 - 2*z^7 - 2*z^6 + 2*z^5 + 3*z^4 - 3*z^2 - z - 1, 2*z^9 - z^8 - 3*z^7 - 2*z^6 + 4*z^5 + 2*z^4 - z^3 - 2*z^2)
+		sage: A.ramified_dyadic_places()
+		set()
+	
+	"""
         if self._ramified_dyadic_places_known:
             return self._ramified_dyadic_places
         dyadic_primes = sorted(
@@ -193,6 +228,14 @@ class QuaternionAlgebraNF(_QA_ab):
         return self.ramified_real_places() | self.ramified_finite_places()
 
     def ramified_nondyadic_residue_characteristics(self):
+	"""
+	find residue classes of ramified finite places that do not lie over 2
+	
+		sage: k.<z>=NumberField(x^5 - 3*x^3 - x^2 + x + 1)
+		sage: A=QuaternionAlgebraNF(k,-4*z^4 + 2*z^3 + 13*z^2 - 3*z - 9, z^4 + z^3 - 4*z^2 - 3*z + 2)
+		sage: A.ramified_nondyadic_residue_characteristics()
+		Counter({13: 1}) 
+	"""
         self._ramified_nondyadic_residue_chars = Counter(
             [
                 radical(place.absolute_norm())
@@ -202,6 +245,14 @@ class QuaternionAlgebraNF(_QA_ab):
         return self._ramified_nondyadic_residue_chars
 
     def ramified_dyadic_residue_characteristics(self):
+	"""
+	Find residue characteristics of ramified places over 2.
+
+		sage: k.<z>=NumberField(x^3+2*x-1)
+		sage: A=QuaternionAlgebraNF(k,13*z-7,-6*z^2+2*z)
+		sage: A.ramified_dyadic_residue_characteristics()
+		Counter({2: 1})
+	"""
         self._ramified_dyadic_residue_chars = Counter(
             [radical(place.absolute_norm()) for place in self.ramified_dyadic_places()]
         )
@@ -212,7 +263,13 @@ class QuaternionAlgebraNF(_QA_ab):
         Find the residue characteristics of the ramified places. It will attempt to
         compute the ramified places if they're not known. The residue characteristics
         are a Counter (morally a multiset) to keep track of multiplicity.
-        """
+        	
+		sage: k.<z>=NumberField(x^3-x-1)
+		sage: A=QuaternionAlgebraNF(k,z^2-4*z,9*z^2-9*z-4)
+		sage: A.ramified_residue_characteristics()
+		Counter({19: 1})
+		
+	"""
         return (
             self.ramified_dyadic_residue_characteristics()
             | self.ramified_nondyadic_residue_characteristics()
@@ -222,6 +279,20 @@ class QuaternionAlgebraNF(_QA_ab):
         """
         Overrides that from Sage's QuaternionAlgebra_ab class. Just whether there is any
         ramification.
+
+		sage: M=Manifold('m003')
+		sage: M=ManifoldNT(snappy_mfld=M)
+		sage: M.dehn_fill((-3,1))
+		sage: N=M.invariant_quaternion_algebra()
+		sage: N.is_division_algebra()
+		True
+
+		sage: M=Manifold('4_1')
+		sage: M=ManifoldNT(snappy_mfld=M)
+		sage: Q=M.invariant_quaternion_algebra()
+		sage: Q.is_division_algebra()
+		False
+
         """
         return bool(self.ramified_finite_places()) or bool(self.ramified_real_places())
 
@@ -244,6 +315,10 @@ class QuaternionAlgebraNF(_QA_ab):
         NumberField. In particular, this is not appropriate for changing to local
         fields. This method will not recompute the ramification, but will transfer it
         via the isomorphism, remembering whether it has been computed.
+		sage: k.<z>=NumberField(x^2+1)
+		sage: A=QuaternionAlgebraNF(k,3-z,2)
+		sage: A.new_QA_via_field_isomorphism(k.hom([-z]))
+		Quaternion Algebra (z + 3, 2) with base ring Number Field in z with defining polynomial x^2 + 1
         """
         if self.base_ring() != isomorphism.domain():
             raise ValueError("The isomorphism domain must be the base ring of self.")
@@ -282,7 +357,14 @@ class QuaternionAlgebraNF(_QA_ab):
         distinguish the algebras via cheaper invariants before more expensive ones.
 
         Note that this method does not produce an isomorphism between the algebras.
-        """
+
+	sage: k.<z>=NumberField(x^3 - x - 1)
+	sage: A=QuaternionAlgebraNF(k,-2*z^2 - z + 2, 6*z^2 - 12*z + 5)
+	sage: B=QuaternionAlgebraNF(k,z^2 - 2*z - 3, 4*z^2 - 2*z - 7)
+	sage: A.is_isomorphic(B)
+        True
+	
+	"""
         if self == other:
             return True
         self_field = self.base_ring()
@@ -315,6 +397,13 @@ class QuaternionAlgebraNF(_QA_ab):
         use the field isomorphism to move the ramification. We also check to see whether
         there are any obvious obstructions to becoming isomorphic such as different
         numbers of ramified places above some rational or infinite place.
+
+		sage: k.<z>=NumberField(x^2 - x + 1)
+		sage: A=QuaternionAlgebraNF(k,45*z - 25, -30*z + 15)
+		sage: B=QuaternionAlgebraNF(k,50-20*z,2)
+		sage: h=k.hom([z.conjugate()])
+		sage: A.same_ramification_via_isomorphism(B,h)
+		False
         """
         self_field = self.base_ring()
         other_field = other.base_ring()
@@ -352,6 +441,10 @@ class QuaternionAlgebraNF(_QA_ab):
         One should generally not try to access information by parsing the output of this
         method: all the data it contains is much more easily accessible by other methods
         in this class.
+		sage: k.<z>=NumberField(x^2 - x + 1)
+		sage: A=QuaternionAlgebraNF(k,45*z - 25, -30*z + 15)
+		sage: A.ramification_string()
+		'Hilbert symbol: (45*z - 25, -30*z + 15)\nFinite ramification: {Fractional ideal (5), Fractional ideal (z + 1)}\nFinite ramification residue characteristics: Counter({5: 1, 3: 1})\nNumber of ramified real places: 0\nRamified real places: []'
         """
         data_strings = list()
         if show_field_data:
