@@ -952,6 +952,21 @@ class ManifoldNT:
         set of generators not e.g. containing an entire Galois orbit. In the
         future there should probably be a more robust way of making sure the generating
         set is not going to mess things up.
+
+        For example:
+
+            sage: M = Manifold('m003(-3, 1))')
+            sage: N = Manifold('6_2(0, 1)')
+            sage: M.compare_arithmetic_invariants(N)
+            {'trace field': False,
+             'invariant trace field': True,
+             'quaternion algebra': False,
+             'invariant quaternion algebra': True,
+             'denominators': False}
+
+        Note that in this example, the 'denominators' comparison returns false, even 
+        though both sets are empty. This is due to convention; since eh trace fields are
+        not equal, the 'denominators' comparison will always return false.
         """
         arith_dict = dict()
         arith_dict["trace field"] = field_isomorphisms.same_subfield_of_CC(
