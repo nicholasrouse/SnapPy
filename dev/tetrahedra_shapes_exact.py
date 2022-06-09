@@ -4,7 +4,7 @@ This function adds to features to find_field.
 
 First, it will later be 
 """
-from sage.all import ComplexIntervalField
+from sage.all import ComplexIntervalField, RIF
 
 from snappy.snap.find_field import *
 
@@ -75,25 +75,54 @@ def expected_angle_sums(M):
     return angle_sums
 
 
-def isolated_root_interval_for_embedding(K, root, prec): 
+def isolated_root_interval_for_embedding(K, root, prec, error_term = 10**-15, max_steps = 20, target_diameter = 10**-6): 
     """
     Given an embedding of a number field, this function returns an 
     complex interval with exactly one root in it 
     
+    The method looks for a contraction of a complex interval to check that 
+    there is a zero in the interval
+  
+    
     """
     # add more exposition about why this is enough
     p = K.defining_polynomial()
+    pd = p.derivative()
     CIF = ComplexIntervalField(prec)
-    z = CIF(root.real(), root.imag())
-    # add a check that z is actually contains a root
-    if 0<abs(p.derivative()(z)):
-        return z
-    else:
-        return None # add more here
+    fudge = error_term
     
+    z = CIF(RIF(root.real()-fudge, root.real()+fudge),RIF(root.imag()-fudge, root.imag()+fudge))
+
+    #if 0 in abs(p.derivative()(z)):
+    #    raise ValueError("z=",z, " contains a zero of the derivative.")
+    #    return None # add more here
+
+    # now run newton's method and check for a contraction.
+    # TODO: Add a proof to these comments
+    for i in range(max_steps):
+        if 0 < abs(pd(z)):
+            pCenter = p(z.center())
+            zNew = CIF(z.center().real(), z.center().imag()) - CIF(pCenter.real(), pCenter.imag())/(pd(z))
+        #else:
+        #    zNew = z-p(z)/((p.derivative()(z)).center())
+        if zNew in z: #and zNew.diameter() < target_diameter:
+            return zNew
+
+        
+        #print('i =', i, '\n z=',z, ' zNew=',zNew, ' diameter= ', zNew.diameter(), 'test ', zNew in z)
+        #print('z data: \n', 'z.real() = [', z.real().lower(), ', ', z.real().upper(), '] diameter', z.real().diameter(),  '\n')
+        #print('z.imag() = [', z.imag().lower(), ', ', z.imag().upper(), '] diameter', z.imag().diameter(),  '\n')
+        #print('zNew data: \n', 'zNew.real() = [', zNew.real().lower(), ', ', zNew.real().upper(), '] diameter', zNew.real().diameter(),  '\n')
+        #print('zNew.imag() = [', zNew.imag().lower(), ', ', zNew.imag().upper(), '] diameter', zNew.imag().diameter(),  '\n')
+
+        
+        z = zNew
+
+        
+    raise ValueError("Newton's method did not complete. Try rerunning with more steps.")
+    return None
     
-# to do:
-# add more to caching
+
 def tetrahedra_shapes_exact(M, prec, deg, verify=False, optimize=False, verbosity = False):
 
     """
@@ -115,17 +144,35 @@ def tetrahedra_shapes_exact(M, prec, deg, verify=False, optimize=False, verbosit
     angle sum conditions are satisfied. Here an interval which isolates the root of the polynomial
     defined in the embedding of the tetrahedral field is returned instead of the approximate roots. 
 
-
+      sage: M = Manifold('m016')
       sage: K, zVerifiedInterval, shapes = tetrahedra_shapes_exact(M, 100, 20, verify=True)
       sage: K.degree()
       3
       sage: K.discriminant()
       -23
-       
+
+    For closed manifolds, we can compute a verified shape field as a warning this field
+    is not an invariant of the manifold.
+  
+      sage: M1 = Manifold('m009(3,2)')
+      sage: M2 = Manifold('m032(4,1)')
+      sage: M1.is_isometric_to(M2)
+      True
+      sage: K1, z1, shapes1 = tetrahedra_shapes_exact(M1, 200, 20, verify=True)
+      sage: K2, z2, shapes2 = tetrahedra_shapes_exact(M2, 200, 20, verify=True)
+      sage: K1 == K2
+      False
+      sage: K1.discriminant()
+      11135264848
+      sage: K2.discriminant()
+      77043994624
+           
     """
     tet_gens = M.tetrahedra_field_gens()
     K = tet_gens.find_field(prec, deg, optimize, verbosity)
     if K == None:
+        if verbosity:
+            print("With prec=",prec, "degree=", deg, " optimize=", optimize, " no field was found ")
         return None
 
 
@@ -163,8 +210,8 @@ def tetrahedra_shapes_exact(M, prec, deg, verify=False, optimize=False, verbosit
             cur_shape = shapes[tet_num]
 
             if i % 3 == 0:
-                 if exponent > 0:
-                    left_side *= cur_shape**exponent)
+                if exponent > 0:
+                    left_side *= cur_shape**exponent
                 elif exponent < 0:
                     right_side *= cur_shape**-exponent
                     
@@ -177,7 +224,7 @@ def tetrahedra_shapes_exact(M, prec, deg, verify=False, optimize=False, verbosit
             elif exponent != 0: # deal with z''= (z-1)/z
                 if exponent > 0:
                     left_side *= (cur_shape-1)**exponent
-                    right_side *= (shapes[int((i-2)/3)])**exponents[i])
+                    right_side *= (cur_shape)**exponent
                 else:
                     right_side *= (cur_shape-1)**-exponent
                     left_side *= (cur_shape)**-exponent
@@ -192,6 +239,12 @@ def tetrahedra_shapes_exact(M, prec, deg, verify=False, optimize=False, verbosit
         return K # consider also adding shapes to cache at this stage
     else:
         t, u, f = types_of_gluing_equations(M)
+
+        zInt = isolated_root_interval_for_embedding(shape_field, shape_field.gen().n(), prec)
+
+        if zInt == None:
+            raiseValueError('No interval for the generator of the field was found')
+        
         if f ==0: # all cusps are unfilled
             # we just check that all tet shapes have positive imaginary part
             # Theorem: Given an algebraic solution to the gluing equations
@@ -200,38 +253,53 @@ def tetrahedra_shapes_exact(M, prec, deg, verify=False, optimize=False, verbosit
             #
             # Proof (check Benedetti and Petronio or recall nathan's argument
 
-            zInt = isolated_root_interval_for_embedding(shape_field, shape_field.gen().n(), prec)
+
+
+
 
             for shape in shapes:
-                if 0 >= (shape.polynomial()(zInt)).imag().lower():
-                    raiseValueError("Could not verify shapes are positive")
+                cur_shape_poly = shape.polynomial()
+                cur_shape_interval = cur_shape_poly(zInt)
+                if 0 >= (cur_shape_interval.imag()).lower():
+                    raise ValueError("Could not verify shapes are positive")
                     #return None
             return [K[0], zInt, K[2]]
         else:
-            print(" to do")
+
 
             interval_shapes = [shape.polynomial()(zInt) for shape in shapes]
             interval_z_primes = [1/(1-z) for z in interval_shapes]
-            interval_z_douple_primes = [(z-1)/z for z in interval_shapes]
+            interval_z_double_primes = [(z-1)/z for z in interval_shapes]
+            listOfZZpZpp = [interval_shapes, interval_z_primes, interval_z_double_primes]
             
-            full_set_of_interval_shapes =zip(interval_shapes, interval_z_primes, interval_z_double_primes)
+            full_set_of_interval_shapes =  [shape_param for tup in zip(*listOfZZpZpp) for shape_param in tup]
 
             for int_shape in interval_shapes:
                 if 0 >= (int_shape.imag()).lower():
-                    raiseValueError("Could not verify shapes")
+                    raise ValueError("Could not verify shapes")
                     return None
             expected_arguments = expected_angle_sums(M)
 
             pi_approx = fast_pi_approx(10) # this should be sufficent
 
-            for i in range(len(M.gluing_equations())):
-                cur_equation = M.gluing_equations()[i]
+            cur_equations = M.gluing_equations()
+
+            for i, cur_equation in enumerate(cur_equations.rows()):
+            
                 cur_argument = 0
                 for j in range(len(cur_equation)):
-                    if cur_equation !=0:
-                        cur_argument = cur_equation[j]*(full_set_of_interval_shapes[j]).arg()
-                if cur_argument.lower() < ((expected_arguments-2)*pi_approx).upper() or cur_argument.upper() < ((expected_arguments+2)*pi_approx).lower():
-                    raiseValueError("Could not verify arguments for ", M.gluing_equations()[i], " with shapes ", full_set_of_interval_shapes[j])
+                    if cur_equation[j] !=0:
+
+                        cur_shape_parameter = full_set_of_interval_shapes[j]
+
+                        cur_argument += cur_equation[j]*(cur_shape_parameter.arg())
+
+                        
+                if cur_argument.lower() < ((expected_arguments[i]-2)*pi_approx).upper() or cur_argument.upper() > ((expected_arguments[i]+2)*pi_approx).lower():
+                    
+
+                    raise ValueError("Could not verify arguments for ", M.gluing_equations()[i], " with shapes ", full_set_of_interval_shapes, 'expected ', pi_approx*expected_arguments[i])
+                    
                     return None
             
                    
