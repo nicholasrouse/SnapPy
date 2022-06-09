@@ -25,15 +25,18 @@ def isomorphisms_between_number_fields(domain_field, codomain_field):
 
     7-Aug-2020
     """
-    polynomial_ring_over_codomain_field = PolynomialRing(codomain_field, "x")
-    domain_min_poly = domain_field.defining_polynomial().change_variable_name("x")
-    poly_to_factor = polynomial_ring_over_codomain_field.coerce(domain_min_poly)
-    factorization = factor(poly_to_factor)
-    iso_list = []
-    for factor_with_multiplicity in factorization:
-        if factor_with_multiplicity[0].degree() == 1:
-            iso_list.append(domain_field.hom([-factor_with_multiplicity[0](0)]))
-    return iso_list
+    if domain_field.degree() != codomain_field.degree():
+        return []
+    else:
+        polynomial_ring_over_codomain_field = PolynomialRing(codomain_field, "x")
+        domain_min_poly = domain_field.defining_polynomial().change_variable_name("x")
+        poly_to_factor = polynomial_ring_over_codomain_field.coerce(domain_min_poly)
+        factorization = factor(poly_to_factor)
+        iso_list = []
+        for factor_with_multiplicity in factorization:
+            if factor_with_multiplicity[0].degree() == 1:
+                iso_list.append(domain_field.hom([-factor_with_multiplicity[0](0)]))
+        return iso_list
 
 
 def special_isomorphism(domain_field, codomain_field, domain_anchors, codomain_anchors):
