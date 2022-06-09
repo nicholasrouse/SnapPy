@@ -303,7 +303,7 @@ class ManifoldNT:
         sage: K = M.trace_field()
         sage: N = Manifold('7_7')
         sage: L = N.trace_field()
-        sage: snapp.snap.field_isomorphisms.same_subfield_of_CC(L,K)
+        sage: SnapPy.snap.field_isomorphisms.same_subfield_of_CC(L,K)
         False
         sage: K.is_isomorphic(L)
         True
