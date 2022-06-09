@@ -19,6 +19,7 @@ __pycache__/
 *.dmg
 *.pkg
 *.exe
+*.py~
 cython/SnapPy.c
 cython/SnapPy.h
 cython/SnapPyHP.cpp
