@@ -66,6 +66,7 @@ class QuaternionAlgebraNF(_QA_ab):
         Returns True or False depending on whether the algebra is ramified at the place.
         The place parameter can be either a prime ideal of the base_ring, or a real
         place of the base ring as contained in the output of base_ring.real_places().
+	
         """
         if self.base_ring().hilbert_symbol(*self.invariants(), place) == -1:
             try:
@@ -88,6 +89,13 @@ class QuaternionAlgebraNF(_QA_ab):
         places as maps. Obviously this could basically be a somewhat long one-liner, but
         I think it's a bit nicer this way. The output by the way is a set as the places
         are hashable in Sage.
+
+		sage: k.<z>=NumberField(x^2-x+1)
+		sage: A=QuaternionAlgebraNF(k,4*z-8,6*z)
+		sage: A.ramified_real_places()
+		set()
+
+		
         """
         if self._ramified_real_places_known:
             return self._ramified_real_places
@@ -202,6 +210,14 @@ class QuaternionAlgebraNF(_QA_ab):
         return self._ramified_nondyadic_residue_chars
 
     def ramified_dyadic_residue_characteristics(self):
+	"""
+	Find residue characteristics of ramified places over 2.
+
+		sage: k.<z>=NumberField(x^3+2*x-1)
+		sage: A=QuaternionAlgebraNF(k,13*z-7,-6*z^2+2*z)
+		sage: A.ramified_dyadic_residue_characteristics()
+		Counter({2: 1})
+	"""
         self._ramified_dyadic_residue_chars = Counter(
             [radical(place.absolute_norm()) for place in self.ramified_dyadic_places()]
         )
@@ -212,7 +228,13 @@ class QuaternionAlgebraNF(_QA_ab):
         Find the residue characteristics of the ramified places. It will attempt to
         compute the ramified places if they're not known. The residue characteristics
         are a Counter (morally a multiset) to keep track of multiplicity.
-        """
+        	
+		sage: k.<z>=NumberField(x^3-x-1)
+		sage: A=QuaternionAlgebraNF(k,z^2-4*z,9*z^2-9*z-4)
+		sage: A.ramified_residue_characteristics()
+		Counter({19: 1})
+		
+	"""
         return (
             self.ramified_dyadic_residue_characteristics()
             | self.ramified_nondyadic_residue_characteristics()
@@ -222,6 +244,20 @@ class QuaternionAlgebraNF(_QA_ab):
         """
         Overrides that from Sage's QuaternionAlgebra_ab class. Just whether there is any
         ramification.
+
+		sage: M=Manifold('m003')
+		sage: M=ManifoldNT(snappy_mfld=M)
+		sage: M.dehn_fill((-3,1))
+		sage: N=M.invariant_quaternion_algebra()
+		sage: N.is_division_algebra()
+		True
+
+		sage: M=Manifold('4_1')
+		sage: M=ManifoldNT(snappy_mfld=M)
+		sage: Q=M.invariant_quaternion_algebra()
+		sage: Q.is_division_algebra()
+		False
+
         """
         return bool(self.ramified_finite_places()) or bool(self.ramified_real_places())
 
