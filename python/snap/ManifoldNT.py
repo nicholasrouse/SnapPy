@@ -273,6 +273,18 @@ class ManifoldNT:
         prec=None,
         degree=None,
     ):
+<<<<<<< HEAD
+        """
+        The verbosity argument prints some information as the method proceeds. This
+        can be useful for large calculations.
+
+        If _force_compute is True, then the method won't stop when it finds the trace
+        field; it will be sure to find the generators as well.
+
+        Last updated: Sept-24 2020
+        """
+=======
+>>>>>>> 54da3e3f4014832227ab122f0e080b28796ad414
         if self._trace_field and prec is None and degree is None:
             return self._trace_field
         if prec is None:
@@ -391,11 +403,15 @@ class ManifoldNT:
         precision variable is used for expressing the Hilbert symbol entries in terms
         of the elements of the trace field.
 
-        The be_smart parameter is used to get a smarter precision based on previous
-        computations.
-
         There are no special kwargs; it just allows for passing in the same argument
         signature as the other invarinats (e.g. compute_trace_field).
+
+           sage: M = Manifold('m003(-3,1)')
+           sage: QA = M.quaternion_algebra()
+           sage: QA.ramified_nondyadic_residue_characteristics()
+           Counter({5: 1})
+           sage: QA.is_division_algebra()
+           True
 
         Possible refactor: Just have one method for computing quaternion algebras from
         ApproximateAlgebraicNumbers. In that case, probably easiest to make another
@@ -453,6 +469,25 @@ class ManifoldNT:
         """
         See docstring for compute_quaterion_algebra_fixed_prec. Should try to refactor this
         somehow since it's so similar to the one for the noninvariant quaternion algebra.
+
+           sage: M = Manifold('m003(-4,1)')
+           sage: IQA = M.invariant_quaternion_algebra()
+           sage: IQA.ramified_nondyadic_residue_characteristics()
+           Counter({13: 1})
+           sage: IQA.is_division_algebra()
+           True
+
+           sage: M = Manifold('m009(5,1)')
+           sage: QA = M.quaternion_algebra()
+           sage: IQA = M.invariant_quaternion_algebra()
+           sage: QA.ramified_nondyadic_residue_characteristics()
+           Counter()
+           sage: IQA.ramified_nondyadic_residue_characteristics()
+           Counter({5: 1})
+           sage: QA.ramified_dyadic_residue_characteristics()
+           Counter()
+           sage: IQA.ramified_dyadic_residue_characteristics()
+           Counter({2: 1})
 
         Last updated: Aug-29 2020
         """
