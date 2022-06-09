@@ -955,6 +955,15 @@ class ManifoldNT:
 
         For example:
 
+            sage: M = Manifold('4_1')
+            sage: N = Manifold('5_2')
+            sage: M.compare_arithmetic_invariants(N)
+            {'trace field': False,
+             'invariant trace field': False,
+             'quaternion algebra': False,
+             'invariant quaternion algebra': False,
+             'denominators': False}
+
             sage: M = Manifold('m003(-3, 1))')
             sage: N = Manifold('6_2(0, 1)')
             sage: M.compare_arithmetic_invariants(N)
@@ -963,10 +972,18 @@ class ManifoldNT:
              'quaternion algebra': False,
              'invariant quaternion algebra': True,
              'denominators': False}
+            sage: O = N.covers(2).pop()
+            sage: M.compare_arithmetic_invariants(O)
+            {'trace field': True,
+             'invariant trace field': True,
+             'quaternion algebra': True,
+             'invariant quaternion algebra': True,
+             'denominators': True}
 
         Note that in this example, the 'denominators' comparison returns false, even 
         though both sets are empty. This is due to convention; since eh trace fields are
         not equal, the 'denominators' comparison will always return false.
+
         """
         arith_dict = dict()
         arith_dict["trace field"] = field_isomorphisms.same_subfield_of_CC(
