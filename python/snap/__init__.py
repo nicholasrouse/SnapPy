@@ -121,7 +121,7 @@ def invariant_trace_field(manifold, prec=None, degree=None):
 def quaternion_algebra(manifold, prec=None, degree=None):
     mfld_nt = ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold)
     mfld_nt.trace_field(prec, degree)
-    return mfld_nt.quaternion_algebra(spec=None, snappy_mfld=manifold).quaternion_algebra(prec)
+    return mfld_nt.quaternion_algebra(prec)
 
 @sage_method
 def invariant_quaternion_algebra(manifold, prec=None, degree=None):
