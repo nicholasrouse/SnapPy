@@ -108,3 +108,77 @@ def add_methods(mfld_class, hyperbolic=True):
         mfld_class.hyperbolic_torsion = nsagetools.hyperbolic_torsion
         mfld_class.hyperbolic_adjoint_torsion = nsagetools.hyperbolic_adjoint_torsion
         mfld_class.hyperbolic_SLN_torsion = nsagetools.hyperbolic_SLN_torsion
+
+@sage_method
+def trace_field(manifold, prec=None, degree=None):
+    return ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold).trace_field(prec, degree)
+
+@sage_method
+def invariant_trace_field(manifold, prec=None, degree=None):
+    return ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold).invariant_trace_field(prec, degree)
+
+@sage_method
+def quaternion_algebra(manifold, prec=None, degree=None):
+    mfld_nt = ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold)
+    mfld_nt.trace_field(prec, degree)
+    return mfld_nt.quaternion_algebra(spec=None, snappy_mfld=manifold).quaternion_algebra(prec)
+
+@sage_method
+def invariant_quaternion_algebra(manifold, prec=None, degree=None):
+    mfld_nt = ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold)
+    mfld_nt.invariant_trace_field(prec, degree)
+    return mfld_nt.invariant_quaternion_algebra(prec)
+
+@sage_method
+def denominators(manifold, prec=None, degree=None):
+    mfld_nt = ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold)
+    mfld_nt.trace_field(prec, degree)
+    return mfld_nt.denominators()
+
+@sage_method
+def denominator_residue_characteristics(manifold, prec=None, degree=None):
+    mfld_nt = ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold)
+    mfld_nt.trace_field(prec, degree)
+    return mfld_nt.denominator_residue_characteristics()
+
+@sage_method
+def is_arithmetic(manifold, prec=None, degree=None):
+    mfld_nt = ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold)
+    mfld_nt.compute_arithmetic_invariants(prec, degree)
+    return mfld_nt.is_arithmetic()
+
+@sage_method
+def p_arith(manifold, prec=None, degree=None):
+    mfld_nt = ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold)
+    mfld_nt.compute_arithmetic_invariants(prec, degree)
+    mfld_nt.p_arith()
+
+@sage_method
+def compare_arithmetic_invariants(manifold1, manifold2, prec=None, degree=None):
+    mfld1_nt = ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold1)
+    mfld2_nt = ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold2)
+    mfld1_nt.compute_arithmetic_invariants(prec, degree)
+    mfld2_nt.compute_arithmetic_invariants(prec, degree)
+    return mfld1_nt.compare_arithmetic_invariants(mfld2_nt)
+
+@sage_method
+def has_same_arithmetic_invariants(manifold1, manifold2, prec=None, degree=None):
+    mfld1_nt = ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold1)
+    mfld2_nt = ManifoldNT.ManifoldNT(spec=None, snappy_mfld=manifold2)
+    mfld1_nt.compute_arithmetic_invariants(prec, degree)
+    mfld2_nt.compute_arithmetic_invariants(prec, degree)
+    return mfld1_nt.has_same_arithmetic_invariants(mfld2_nt)
+
+
+def add_arith_methods(mfld_class):
+    mfld_class.trace_field = trace_field
+    mfld_class.invariant_trace_field = invariant_trace_field
+    mfld_class.quaternion_algebra = quaternion_algebra
+    mfld_class.invariant_quaternion_algebra = invariant_quaternion_algebra
+    mfld_class.denominators = denominators
+    mfld_class.denominator_residue_characteristics = denominator_residue_characteristics
+    mfld_class.is_modtwo_homology_sphere = ManifoldNT.ManifoldNT.is_modtwo_homology_sphere
+    mfld_class.is_arithmetic = is_arithmetic
+    mfld_class.p_arith = p_arith
+    mfld_class.compare_arithmetic_invariants = compare_arithmetic_invariants
+    mfld_class.has_same_arithmetic_invariants = has_same_arithmetic_invariants
