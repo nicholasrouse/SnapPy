@@ -826,7 +826,7 @@ class ManifoldNT:
         if not all((self_field, other_field, self_qa, other_qa)):
             raise RuntimeError("Trace fields or quaternion algebras not known.")
         if self_field == other_field:
-            return self._quaternion_algebra.is_isomorphic(other._quaternion_algebra)
+            return self_qa.is_isomorphic(other_qa)
         if not field_isomorphisms.same_subfield_of_CC(
             self_field, other_field, up_to_conjugation=True
         ):
@@ -955,10 +955,10 @@ class ManifoldNT:
         """
         arith_dict = dict()
         arith_dict["trace field"] = field_isomorphisms.same_subfield_of_CC(
-            self._trace_field, other._trace_field
+            self.trace_field(), other.trace_field()
         )
         arith_dict["invariant trace field"] = field_isomorphisms.same_subfield_of_CC(
-            self._invariant_trace_field, other._invariant_trace_field
+            self.invariant_trace_field(), other.invariant_trace_field()
         )
         arith_dict["quaternion algebra"] = self._isomorphic_quaternion_algebras(other)
         arith_dict[
