@@ -306,6 +306,7 @@ class ManifoldNT:
         sage: snapp.snap.field_isomorphisms.same_subfield_of_CC(L,K)
         False
         sage: K.is_isomorphic(L)
+        True
 
         Last updated: Sept-24 2020
         """
@@ -351,7 +352,7 @@ class ManifoldNT:
         Last updated: Jun-6 2022
 
         sage: M = Manifold('8_12')
-        sage: K = M.invariant_trace_field()
+        sage: K = M.invariant_trace_field(5000,20)
         sage: K.degree()
         14
         sage: K.discriminant()
