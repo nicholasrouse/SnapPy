@@ -966,7 +966,7 @@ class ManifoldNT:
             {'trace field': False, 'invariant trace field': True, 'quaternion algebra': False, 'invariant quaternion algebra': True, 'denominators': False}
             sage: O = N.covers(2).pop()
             sage: M.compare_arithmetic_invariants(O)
-            {'trace field': True, 'invariant trace field': True, 'quaternion algebra': True,'invariant quaternion algebra': True, 'denominators': True}
+            {'trace field': True, 'invariant trace field': True, 'quaternion algebra': True, 'invariant quaternion algebra': True, 'denominators': True}
 
         Note that in the first part of this example, the 'denominators' comparison returns false, even 
         though both sets are empty. This is due to convention; since eh trace fields are
