@@ -1,29 +1,20 @@
 """
-A module for quaternion algebras over number fields. The class will inherit from Sage's
-quaternion algebras. The key method will be an is_isomorphic method which leverages the
+A module for quaternion algebras over number fields. The class inherits from Sage's
+quaternion algebras. The key method is the is_isomorphic method which leverages the
 Albert-Brauer-Hasse-Noether theorem to check for isomorphism. The primary application
 will be for quaternion algebras associted to Kleinian groups, so there might be a few
 other methods which are attuned to this purpose.
 
-Our first pass will mostly be focused on
-1. Computing ramification data such as real and finite places and residue
-characteristics.
-2. Providing a convenient __str__ representation for printing in other modules.
-3. A fairly general method for testing for isomorphism between two quaternion algebras.
-
-For now, the class QuaternionAlgebraNF won't incorporate the full and rich structure of
+For now, the class QuaternionAlgebraNF does incorporate the full and rich structure of
 quaternion algebras over number fields. E.g. we don't provide methods for base changing
-or finding splitting fields. In principle this information can be read off from the
-ramification data, and maybe one day we'll add it. To that end one should take caution
-in using certain sage methods that this class inherits. For example, sage provides a way
-to base extend, but doing so then asking for ramification data will currently produce an
-incorrect answer because base changing doesn't remove previously computed ramification
-information.
+or finding splitting fields. To that end one should take caution in using certain sage
+methods that this class inherits. For example, sage provides a way to base extend, but
+doing so then asking for ramification data will currently produce an incorrect answer
+because base changing doesn't remove previously computed ramification information.
 
 This class basically doesn't work when the base ring is QQ amusingly. The issue is many
-number field methods in sage are not implemented for QQ. Maybe there's a clean fix for
-this, but for now I'm going to leave it since the functionality already pretty much
-exists in Sage for quaternion algebras over the rationals.
+number field methods in sage are not implemented for QQ. However, one can use the
+existing functionality in sage for quaternion algebras over QQ.
 """
 from collections import Counter
 
@@ -40,9 +31,7 @@ class QuaternionAlgebraNF(_QA_ab):
         names="i,j,k",
     ):
         """
-        On initialization we by default compute the ramification set. We don't actually
-        type-test that the base_ring is a number field, but we do print a warning if it
-        doesn't look like one of Sage's NumberField.
+        
         """
         if base_ring == QQ:
             raise NotImplementedError(
