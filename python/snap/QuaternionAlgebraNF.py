@@ -31,7 +31,9 @@ class QuaternionAlgebraNF(_QA_ab):
         names="i,j,k",
     ):
         """
-        
+        A quaternion algebra over with Hilbert symbol (a,b). The ``base_ring`` argument
+        should be a ``sage`` `NumberField`` or something that behaves like it. However,
+        the base field should not be ``QQ`` itself.
         """
         if base_ring == QQ:
             raise NotImplementedError(
